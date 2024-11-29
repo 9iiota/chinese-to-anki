@@ -1,0 +1,24 @@
+{
+	"manifest_version": 3,
+	"name": "Chinese",
+	"description": "Add Chinese flashcards to Anki",
+	"version": "0.1",
+	"options_page": "popup.html",
+	"permissions": [
+		"alarms",
+		"storage"
+	],
+		"action": {
+		"default_popup": "popup.html"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
+	"content_scripts": [
+		{
+			"css": ["styles.css"],
+			"js": ["content.js"],
+			"matches": ["*://*.mdbg.net/chinese/dictionary?*"]
+		}
+	]
+}
