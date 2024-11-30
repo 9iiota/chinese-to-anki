@@ -28,12 +28,12 @@ for (const row of rows)
 
         // Get pinyin and audio
         const pinyins = head.querySelectorAll('.pinyin a span');
-        let pinyin = '';
+        let pinyinArray = [];
         let audioArray = [];
         for (const pinyinText of pinyins)
         {
             // Pinyin
-            pinyin += pinyinText.textContent;
+            pinyinArray.push(pinyinText.textContent);
 
             // Audio
             const convertedPinyin = convertPinyinToNormal(pinyinText.textContent);
@@ -53,7 +53,7 @@ for (const row of rows)
         definition = definition.replace(/\s+/g, ' ').replace(/,\s*$/, '');
         definition = definition.split(' ').join('; ').replace(/;\s*$/, '');
 
-        chrome.runtime.sendMessage({ action: 'createCard', data: { hanzi, pinyin, definition, audioArray } });
+        chrome.runtime.sendMessage({ action: 'createCard', data: { hanzi, pinyinArray, definition, audioArray } });
     };
 
     head.appendChild(button);

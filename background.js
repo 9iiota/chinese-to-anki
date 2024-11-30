@@ -152,9 +152,35 @@ async function createChineseModel()
     // }
 }
 
+function getToneColor(syllable)
+{
+    const tone1 = /[āēīōūǖ]/;
+    const tone2 = /[áéíóúǘ]/;
+    const tone3 = /[ǎěǐǒǔǚ]/;
+    const tone4 = /[àèìòùǜ]/;
+
+    if (tone1.test(syllable))
+    {
+        return 'red';
+    }       // 1st tone: red
+    if (tone2.test(syllable))
+    {
+        return 'orange';
+    }
+    if (tone3.test(syllable))
+    {
+        return 'green';
+    }
+    if (tone4.test(syllable))
+    {
+        return 'blue';
+    }
+    return 'white';
+}
+
 function createAnkiCard(data)
 {
-    const { hanzi, pinyin, definition, audioArray } = data;
+    const { hanzi, pinyinArray, definition, audioArray } = data;
     chrome.storage.sync.get(['ankiDeck'], function (storage)
     {
         if (!storage.ankiDeck)
@@ -166,6 +192,12 @@ function createAnkiCard(data)
         }
 
         const { ankiDeck } = storage;
+        let pinyin = '';
+        for (const syllable of pinyinArray)
+        {
+            const color = getToneColor(syllable);
+            pinyin += `<span style="color: ${color}">${syllable}</span>`;
+        }
         const audioObjects = audioArray.map(audio =>
         {
             return {
