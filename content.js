@@ -6,6 +6,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
     {
         alert(message.message);
     }
+    else if (message.action === 'stopLoading')
+    {
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const button = loadingSpinner.parentElement.querySelector('button');
+        button.innerHTML = 'Flashcard Created';
+        button.disabled = true;
+        button.style.pointerEvents = 'none';
+        button.style.display = 'block';
+        loadingSpinner.style.display = 'none';
+    }
 });
 
 // Add a copy button to each pinyin
@@ -15,9 +25,28 @@ for (const row of rows)
     const head = row.querySelector('.head');
 
     const button = document.createElement('button');
-    button.innerHTML = 'Copy';
-    button.onclick = () =>
+    button.innerHTML = 'Create Flashcard';
+    button.addEventListener('click', () =>
     {
+        button.style.display = 'none';
+
+        let loadingSpinner = document.getElementById('loading-spinner');
+        if (!loadingSpinner)
+        {
+            loadingSpinner = document.createElement('div');
+            loadingSpinner.id = 'loading-spinner';
+
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+
+            loadingSpinner.appendChild(spinner);
+            head.appendChild(loadingSpinner);
+        }
+        else
+        {
+            loadingSpinner.style.display = 'block';
+        }
+
         // Get hanzi
         const hanzis = head.querySelectorAll('.hanzi a span');
         let hanzi = '';
@@ -54,7 +83,7 @@ for (const row of rows)
         definition = definition.split(' ').join('; ').replace(/;\s*$/, '');
 
         chrome.runtime.sendMessage({ action: 'createCard', data: { hanzi, pinyinArray, definition, audioArray } });
-    };
+    });
 
     head.appendChild(button);
 };

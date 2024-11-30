@@ -16,6 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
         {
             await createChineseModel();
             await createAnkiCard(message.data);
+            chrome.tabs.sendMessage(sender.tab.id, { action: 'stopLoading' });
         })();
     }
     else if (message.action === 'deckNames')
@@ -67,12 +68,12 @@ async function createChineseModel()
 {
     try
     {
-        const models = await findModelsByName(['Chinese']);
+        const models = await findModelsByName(['ChineseToAnki']);
     }
     catch (error)
     {
         return invoke('createModel', 6, {
-            modelName: 'Chinese',
+            modelName: 'ChineseToAnki',
             inOrderFields: ['Hanzi', 'Pinyin', 'Definition', 'Audio'],
             cardTemplates: [
                 {
@@ -91,7 +92,7 @@ async function createChineseModel()
 
     // try
     // {
-    //     const models = await findModelsByName(['Chinese']);
+    //     const models = await findModelsByName(['ChineseToAnki']);
     //     for (const model of models)
     //     {
     //         // Check fields
@@ -134,7 +135,7 @@ async function createChineseModel()
     // catch (error)
     // {
     //     return invoke('createModel', 6, {
-    //         modelName: 'Chinese',
+    //         modelName: 'ChineseToAnki',
     //         inOrderFields: ['Hanzi', 'Pinyin', 'Definition', 'Audio'],
     //         cardTemplates: [
     //             {
@@ -210,7 +211,7 @@ function createAnkiCard(data)
         });
         const note = {
             deckName: ankiDeck,
-            modelName: 'Chinese',
+            modelName: 'ChineseToAnki',
             fields: {
                 Hanzi: hanzi,
                 Pinyin: pinyin,
@@ -220,6 +221,10 @@ function createAnkiCard(data)
         };
 
         invoke('addNote', 6, { note: note })
+            .catch(error =>
+            {
+                return;
+            });
     });
 };
 
