@@ -1,5 +1,13 @@
 const BASE_AUDIO_URL = 'https://www.mdbg.net/chinese/rsc/audio/voice_pinyin_pz/';
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
+{
+    if (message.action === 'showAlert')
+    {
+        alert(message.message);
+    }
+});
+
 // Add a copy button to each pinyin
 const rows = document.getElementsByClassName('row');
 for (const row of rows)
@@ -17,7 +25,6 @@ for (const row of rows)
         {
             hanzi += hanziText.textContent;
         }
-        console.log(`Hanzi: ${hanzi}`);
 
         // Get pinyin and audio
         const pinyins = head.querySelectorAll('.pinyin a span');
@@ -34,7 +41,6 @@ for (const row of rows)
             const audioUrl = `${BASE_AUDIO_URL}${convertedPinyin}${toneNumber}.mp3`;
             audioArray.push(audioUrl);
         }
-        console.log(`Pinyin: ${pinyin}`);
 
         // Get definition
         const definitions = row.querySelector('.details .defs');
@@ -46,7 +52,6 @@ for (const row of rows)
         let definition = clonedDefinition.textContent.trim();
         definition = definition.replace(/\s+/g, ' ').replace(/,\s*$/, '');
         definition = definition.split(' ').join('; ').replace(/;\s*$/, '');
-        console.log(`Definition: ${definition}`);
 
         chrome.runtime.sendMessage({ action: 'createCard', data: { hanzi, pinyin, definition, audioArray } });
     };

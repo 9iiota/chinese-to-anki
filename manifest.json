@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
-	"name": "Chinese",
-	"description": "Add Chinese flashcards to Anki",
-	"version": "0.1",
+	"name": "Chinese to Anki",
+	"description": "Create Chinese Anki cards from MDBG.net",
+	"version": "1.0",
 	"options_page": "popup.html",
 	"permissions": [
 		"alarms",

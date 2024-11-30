@@ -8,15 +8,28 @@ chrome.alarms.onAlarm.addListener(() =>
     console.log('Keeping service worker alive...')
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
 {
-    if (request.action === 'createCard')
+    if (message.action === 'createCard')
     {
         (async () =>
         {
             await createChineseModel();
-            await createAnkiCard(request.data);
+            await createAnkiCard(message.data);
         })();
+    }
+    else if (message.action === 'deckNames')
+    {
+        invoke('deckNames', 6)
+            .then(deckNames =>
+            {
+                sendResponse({ deckNames });
+            })
+            .catch(error =>
+            {
+                sendResponse({ error });
+            });
+        return true;
     }
 });
 
@@ -144,6 +157,14 @@ function createAnkiCard(data)
     const { hanzi, pinyin, definition, audioArray } = data;
     chrome.storage.sync.get(['ankiDeck'], function (storage)
     {
+        if (!storage.ankiDeck)
+        {
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
+            {
+                chrome.tabs.sendMessage(tabs[0].id, { action: 'showAlert', message: 'Please set Anki deck in the extension options' });
+            });
+        }
+
         const { ankiDeck } = storage;
         const audioObjects = audioArray.map(audio =>
         {
