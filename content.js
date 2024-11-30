@@ -8,13 +8,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
     }
     else if (message.action === 'stopLoading')
     {
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const button = loadingSpinner.parentElement.querySelector('button');
+        const button = document.getElementById('creating-flashcard');
+        button.id = '';
         button.innerHTML = 'Flashcard Created';
         button.disabled = true;
         button.style.pointerEvents = 'none';
-        button.style.display = 'block';
-        loadingSpinner.style.display = 'none';
     }
 });
 
@@ -28,24 +26,8 @@ for (const row of rows)
     button.innerHTML = 'Create Flashcard';
     button.addEventListener('click', () =>
     {
-        button.style.display = 'none';
-
-        let loadingSpinner = document.getElementById('loading-spinner');
-        if (!loadingSpinner)
-        {
-            loadingSpinner = document.createElement('div');
-            loadingSpinner.id = 'loading-spinner';
-
-            const spinner = document.createElement('div');
-            spinner.className = 'spinner';
-
-            loadingSpinner.appendChild(spinner);
-            head.appendChild(loadingSpinner);
-        }
-        else
-        {
-            loadingSpinner.style.display = 'block';
-        }
+        button.id = 'creating-flashcard';
+        button.innerHTML = 'Creating Flashcard...';
 
         // Get hanzi
         const hanzis = head.querySelectorAll('.hanzi a span');
@@ -72,15 +54,17 @@ for (const row of rows)
         }
 
         // Get definition
-        const definitions = row.querySelector('.details .defs');
+        const defs = row.querySelector('.details .defs');
 
-        const clonedDefinition = definitions.cloneNode(true);
-        clonedDefinition.querySelectorAll('a, strong').forEach(el => el.remove());
+        const clonedDefinition = defs.cloneNode(true);
+        clonedDefinition.querySelectorAll('strong').forEach(el => el.remove());
 
-        // Normalize spaces and remove trailing punctuation like ","
-        let definition = clonedDefinition.textContent.trim();
-        definition = definition.replace(/\s+/g, ' ').replace(/,\s*$/, '');
-        definition = definition.split(' ').join('; ').replace(/;\s*$/, '');
+        const definitions = clonedDefinition.innerHTML.split('<a')[0].split('  ');
+        const definition = definitions.filter(item => /[a-zA-Z]/.test(item)).join(' /');
+
+        // // Normalize spaces and remove trailing punctuation like ","
+        // const definition = definition.replace(/\s+/g, ' ').replace(/,\s*$/, '');
+        // definition = definition.split(' ').join('; ').replace(/;\s*$/, '');
 
         chrome.runtime.sendMessage({ action: 'createCard', data: { hanzi, pinyinArray, definition, audioArray } });
     });
