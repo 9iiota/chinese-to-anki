@@ -1,6 +1,3 @@
-const QFMT = ['{{Hanzi}}', '{{Pinyin}}<br>\n{{Definition}}<br>\n{{Audio}}']
-const AFMT = ['{{FrontSide}}\n\n<hr id=answer>\n\n{{Pinyin}}<br>\n{{Definition}}<br>\n{{Audio}}', '{{FrontSide}}\n\n<hr id=answer>\n\n{{Hanzi}}']
-
 // Used to keep the service worker alive
 chrome.alarms.create({ periodInMinutes: .4 })
 chrome.alarms.onAlarm.addListener(() =>
